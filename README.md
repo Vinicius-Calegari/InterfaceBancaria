@@ -1,18 +1,48 @@
-## Getting Started
+# Sistema Bancário em Java
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Aplicação de console desenvolvida em Java para praticar fundamentos de programação orientada a objetos e manipulação de dados em memória.
 
-## Folder Structure
+## Funcionalidades
 
-The workspace contains two folders by default, where:
+- Criação de contas bancárias
+- Depósitos
+- Saques com validação de saldo
+- Consulta de saldo
+- Gerenciamento de múltiplas contas durante a execução
+- Menu interativo pelo terminal
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## Tecnologias e conceitos
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+- Java
+- Programação Orientada a Objetos (POO)
+- Classes e objetos
+- Encapsulamento
+- `ArrayList`
+- Estruturas condicionais e de repetição
+- Entrada de dados com `Scanner`
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+## Estrutura
 
-## Dependency Management
+```text
+src/
+└── App.java
+```
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+A classe `ContaBancaria` representa uma conta e concentra as operações sobre saldo. A classe `App` controla o menu, a entrada do usuário e a coleção de contas.
+
+## Como executar
+
+Com o Java instalado:
+
+```bash
+javac src/App.java
+java -cp src App
+```
+
+## Objetivo
+
+Projeto criado para consolidar fundamentos de Java e POO por meio de um problema simples, com regras de negócio como validação de depósitos, saques e saldo disponível.
+
+---
+
+Desenvolvido por [Vinícius Calegari](https://github.com/Vinicius-Calegari).
