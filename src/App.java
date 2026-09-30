@@ -1,32 +1,25 @@
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
-
-    private static final ArrayList<ContaBancaria> contas = new ArrayList<>();
+    private static final List<ContaBancaria> contas = new ArrayList<>();
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         int opcao;
-
         do {
             exibirMenu();
-            opcao = scanner.nextInt();
-            scanner.nextLine(); // limpar buffer
-
-            String mensagem = switch (opcao) {
-                case 1 -> { criarConta(); yield ""; }
-                case 2 -> { depositar(); yield ""; }
-                case 3 -> { sacar(); yield ""; }
-                case 4 -> { consultarSaldo(); yield ""; }
-                case 5 -> { yield "Saindo do sistema. Obrigado!"; }
-                default -> { yield "Opção inválida. Tente novamente."; }
-            };
-
-            if (!mensagem.isEmpty()) {
-                System.out.println(mensagem);
+            opcao = lerInteiro();
+            switch (opcao) {
+                case 1 -> criarConta();
+                case 2 -> depositar();
+                case 3 -> sacar();
+                case 4 -> consultarSaldo();
+                case 5 -> System.out.println("Saindo do sistema. Obrigado!");
+                default -> System.out.println("Opção inválida. Tente novamente.");
             }
-
         } while (opcao != 5);
     }
 
@@ -42,41 +35,41 @@ public class App {
 
     private static void criarConta() {
         System.out.print("Digite o nome do titular: ");
-        String titular = scanner.nextLine();
-        contas.add(new ContaBancaria(titular));
-        System.out.println("Conta criada com sucesso!");
+        String titular = scanner.nextLine().trim();
+        try {
+            contas.add(new ContaBancaria(titular));
+            System.out.println("Conta criada com sucesso!");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void depositar() {
         ContaBancaria conta = selecionarConta();
-        if (conta != null) {
+        if (conta == null) return;
+        try {
             System.out.print("Digite o valor do depósito: ");
-            double valor = scanner.nextDouble();
-            scanner.nextLine(); // limpar buffer
-            conta.depositar(valor);
+            conta.depositar(lerValorMonetario());
             System.out.println("Depósito realizado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     private static void sacar() {
         ContaBancaria conta = selecionarConta();
-        if (conta != null) {
+        if (conta == null) return;
+        try {
             System.out.print("Digite o valor do saque: ");
-            double valor = scanner.nextDouble();
-            scanner.nextLine(); // limpar buffer
-            if (conta.sacar(valor)) {
-                System.out.println("Saque realizado com sucesso!");
-            } else {
-                System.out.println("Saldo insuficiente!");
-            }
+            System.out.println(conta.sacar(lerValorMonetario()) ? "Saque realizado com sucesso!" : "Saldo insuficiente!");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     private static void consultarSaldo() {
         ContaBancaria conta = selecionarConta();
-        if (conta != null) {
-            System.out.printf("Saldo da conta de %s: R$ %.2f%n", conta.getTitular(), conta.getSaldo());
-        }
+        if (conta != null) System.out.printf("Saldo da conta de %s: R$ %s%n", conta.getTitular(), conta.getSaldo().toPlainString());
     }
 
     private static ContaBancaria selecionarConta() {
@@ -84,53 +77,27 @@ public class App {
             System.out.println("Nenhuma conta cadastrada.");
             return null;
         }
-
         System.out.println("Selecione a conta:");
-        for (int i = 0; i < contas.size(); i++) {
-            System.out.printf("%d. %s%n", i + 1, contas.get(i).getTitular());
-        }
-
-        int indice = scanner.nextInt();
-        scanner.nextLine(); // limpar buffer
-
+        for (int i = 0; i < contas.size(); i++) System.out.printf("%d. %s%n", i + 1, contas.get(i).getTitular());
+        int indice = lerInteiro();
         if (indice < 1 || indice > contas.size()) {
             System.out.println("Opção inválida.");
             return null;
         }
-
         return contas.get(indice - 1);
     }
-}
 
-class ContaBancaria {
-
-    private final String titular;
-    private double saldo;
-
-    public ContaBancaria(String titular) {
-        this.titular = titular;
-        this.saldo = 0.0;
-    }
-
-    public String getTitular() {
-        return titular;
-    }
-
-    public double getSaldo() {
-        return saldo;
-    }
-
-    public void depositar(double valor) {
-        if (valor > 0) {
-            saldo += valor;
+    private static int lerInteiro() {
+        while (true) {
+            String entrada = scanner.nextLine().trim();
+            try { return Integer.parseInt(entrada); }
+            catch (NumberFormatException e) { System.out.print("Digite um número válido: "); }
         }
     }
 
-    public boolean sacar(double valor) {
-        if (valor > 0 && saldo >= valor) {
-            saldo -= valor;
-            return true;
-        }
-        return false;
+    private static BigDecimal lerValorMonetario() {
+        String entrada = scanner.nextLine().trim().replace(',', '.');
+        try { return new BigDecimal(entrada); }
+        catch (NumberFormatException e) { throw new IllegalArgumentException("Valor monetário inválido."); }
     }
 }
